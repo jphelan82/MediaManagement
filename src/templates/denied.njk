@@ -1,0 +1,49 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}Denied Movies — Media Management{% endblock %}
+
+{% block content %}
+<hgroup>
+  <h1>Denied Upgrades</h1>
+  <p>Previously denied movies. You can still approve them here.</p>
+</hgroup>
+
+{% if items.length > 0 %}
+<table>
+  <thead>
+    <tr>
+      <th>Movie</th>
+      <th>Year</th>
+      <th>Current Library</th>
+      <th>Target Library</th>
+      <th>Denied At</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr id="denied-row-{{ item.id }}">
+      <td><strong>{{ item.title }}</strong></td>
+      <td>{{ item.year }}</td>
+      <td><span class="tier-badge tier-{{ item.current_tier }}">{{ tierName(item.current_tier) }}</span></td>
+      <td><span class="tier-badge tier-{{ item.target_tier }}">{{ tierName(item.target_tier) }}</span></td>
+      <td>{{ item.updated_at }}</td>
+      <td class="action-buttons">
+        <button class="outline"
+                hx-post="/api/queue/denied/{{ item.id }}/approve"
+                hx-target="#denied-row-{{ item.id }}"
+                hx-swap="outerHTML swap:0.5s"
+                hx-confirm="Re-approve upgrade for {{ item.title }}?">
+          Approve
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+  <p>No denied upgrades.</p>
+</div>
+{% endif %}
+{% endblock %}

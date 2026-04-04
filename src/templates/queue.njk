@@ -1,0 +1,54 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}Approval Queue — Media Management{% endblock %}
+
+{% block content %}
+<hgroup>
+  <h1>Upgrade Approval Queue</h1>
+  <p>Movies with higher quality available. Approve to upgrade, deny to skip.</p>
+</hgroup>
+
+{% if items.length > 0 %}
+<table>
+  <thead>
+    <tr>
+      <th>Movie</th>
+      <th>Year</th>
+      <th>Current Library</th>
+      <th>Target Library</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="queue-body">
+    {% for item in items %}
+    <tr id="queue-row-{{ item.id }}">
+      <td><strong>{{ item.title }}</strong></td>
+      <td>{{ item.year }}</td>
+      <td><span class="tier-badge tier-{{ item.current_tier }}">{{ tierName(item.current_tier) }}</span></td>
+      <td><span class="tier-badge tier-{{ item.target_tier }}">{{ tierName(item.target_tier) }}</span></td>
+      <td class="action-buttons">
+        <button class="outline"
+                hx-post="/api/queue/{{ item.id }}/approve"
+                hx-target="#queue-row-{{ item.id }}"
+                hx-swap="outerHTML swap:0.5s"
+                hx-confirm="Approve upgrade for {{ item.title }}?">
+          Approve
+        </button>
+        <button class="outline secondary"
+                hx-post="/api/queue/{{ item.id }}/deny"
+                hx-target="#queue-row-{{ item.id }}"
+                hx-swap="outerHTML swap:0.5s"
+                hx-confirm="Deny upgrade for {{ item.title }}?">
+          Deny
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+  <p>No pending upgrades. All movies are in their correct quality tier.</p>
+</div>
+{% endif %}
+{% endblock %}

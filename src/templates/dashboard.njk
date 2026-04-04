@@ -1,0 +1,60 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}Dashboard — Media Management{% endblock %}
+
+{% block content %}
+<hgroup>
+  <h1>Dashboard</h1>
+  <p>Library quality tier management overview</p>
+</hgroup>
+
+<div class="grid">
+  <article>
+    <header>Pending Approvals</header>
+    <h2>{{ pendingCount }}</h2>
+    {% if pendingCount > 0 %}<a href="/queue">Review →</a>{% endif %}
+  </article>
+  <article>
+    <header>Denied</header>
+    <h2>{{ deniedCount }}</h2>
+    {% if deniedCount > 0 %}<a href="/denied">View →</a>{% endif %}
+  </article>
+  <article>
+    <header>Scanner</header>
+    {% if scanProgress.running %}
+      <p>Running: {{ scanProgress.processed }}/{{ scanProgress.total }}</p>
+    {% else %}
+      <p>Idle</p>
+    {% endif %}
+    <button hx-post="/api/scan" hx-swap="outerHTML" {% if scanProgress.running %}disabled{% endif %}>
+      Run Scan
+    </button>
+  </article>
+</div>
+
+<h3>Recent Activity</h3>
+{% if recentActions.length > 0 %}
+<table>
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Movie</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for action in recentActions %}
+    <tr>
+      <td>{{ action.created_at }}</td>
+      <td>{{ action.title }}</td>
+      <td>{{ action.action_type }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+  <p>No recent activity. Run a scan to get started.</p>
+</div>
+{% endif %}
+{% endblock %}

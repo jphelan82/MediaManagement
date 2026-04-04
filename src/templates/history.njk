@@ -1,0 +1,52 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}History — Media Management{% endblock %}
+
+{% block content %}
+<hgroup>
+  <h1>Action History</h1>
+  <p>Log of all downgrades, upgrades, and queue actions.</p>
+</hgroup>
+
+{% if entries.length > 0 %}
+<table>
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Movie</th>
+      <th>Action</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in entries %}
+    <tr>
+      <td>{{ entry.created_at }}</td>
+      <td><strong>{{ entry.title }}</strong></td>
+      <td>{{ entry.action_type }}</td>
+      <td>{{ entry.details or '' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if totalPages > 1 %}
+<nav>
+  <ul>
+    {% if page > 1 %}
+    <li><a href="/history?page={{ page - 1 }}">Previous</a></li>
+    {% endif %}
+    <li>Page {{ page }} of {{ totalPages }}</li>
+    {% if page < totalPages %}
+    <li><a href="/history?page={{ page + 1 }}">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+  <p>No actions recorded yet.</p>
+</div>
+{% endif %}
+{% endblock %}

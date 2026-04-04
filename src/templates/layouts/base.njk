@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Media Management{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <style>
+    :root {
+      --pico-font-size: 16px;
+    }
+    nav .brand { font-weight: bold; font-size: 1.2rem; }
+    .badge {
+      display: inline-block;
+      background: var(--pico-primary);
+      color: var(--pico-primary-inverse);
+      border-radius: 50%;
+      width: 1.5em;
+      height: 1.5em;
+      line-height: 1.5em;
+      text-align: center;
+      font-size: 0.8rem;
+      margin-left: 0.3em;
+      vertical-align: middle;
+    }
+    .tier-badge {
+      display: inline-block;
+      padding: 0.15em 0.5em;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .tier-1 { background: #7c3aed; color: white; }
+    .tier-2 { background: #2563eb; color: white; }
+    .tier-3 { background: #059669; color: white; }
+    .action-buttons { display: flex; gap: 0.5rem; }
+    .action-buttons button { margin: 0; padding: 0.4em 0.8em; font-size: 0.85rem; }
+    .htmx-indicator { opacity: 0; transition: opacity 200ms ease-in; }
+    .htmx-request .htmx-indicator { opacity: 1; }
+    .htmx-request.htmx-indicator { opacity: 1; }
+    .fade-out { opacity: 0; transition: opacity 0.5s ease-out; }
+    .status-approved { color: var(--pico-ins-color); font-weight: bold; }
+    .status-denied { color: var(--pico-del-color); font-weight: bold; }
+    table { margin-top: 1rem; }
+    .empty-state { text-align: center; padding: 3rem; color: var(--pico-muted-color); }
+  </style>
+</head>
+<body>
+  <nav class="container-fluid">
+    <ul>
+      <li><a href="/" class="brand">Media Management</a></li>
+    </ul>
+    <ul>
+      <li><a href="/">Dashboard</a></li>
+      <li><a href="/queue">Queue{% if pendingCount %}<span class="badge">{{ pendingCount }}</span>{% endif %}</a></li>
+      <li><a href="/denied">Denied</a></li>
+      <li><a href="/history">History</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="container">
+    <small>Media Management Service</small>
+  </footer>
+</body>
+</html>

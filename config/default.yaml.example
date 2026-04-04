@@ -1,0 +1,35 @@
+radarr:
+  url: "http://192.168.50.100:7878"
+  apiKey: "YOUR_RADARR_API_KEY"
+
+# Library tiers: tier 1 = highest quality, tier 3 = lowest
+# rootFolder and qualityProfileId must match your Radarr configuration
+libraries:
+  - name: "Movies UHD BR"
+    tier: 1
+    rootFolder: "S:\\Movies"
+    qualityProfileId: 7    # UHD Remux — only Remux-2160p
+  - name: "Movies UHD"
+    tier: 2
+    rootFolder: "S:\\Movies (UHD)"
+    qualityProfileId: 5    # Ultra-HD — all 4K sources
+  - name: "HD"
+    tier: 3
+    rootFolder: "S:\\Movies (HD)"
+    qualityProfileId: 4    # HD-1080p — 1080p sources
+
+scanner:
+  scheduleCron: "0 */2 * * *"
+  rateLimit:
+    maxConcurrent: 2
+    delayBetweenMs: 5000
+    maxPerHour: 100
+
+pushover:
+  enabled: false
+  userKey: ""
+  apiToken: ""
+
+server:
+  host: "0.0.0.0"
+  port: 8765
