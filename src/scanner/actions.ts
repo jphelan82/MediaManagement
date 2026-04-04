@@ -23,6 +23,7 @@ export async function executeDowngrade(
   movie: RadarrMovie,
   targetLib: LibraryConfig,
   logRepo: LogRepository,
+  actionType: string = 'downgrade',
 ): Promise<void> {
   const movieFolderName = getMovieFolderName(movie.path);
   const newPath = buildMoviePath(targetLib.rootFolder, movieFolderName);
@@ -46,7 +47,7 @@ export async function executeDowngrade(
   logRepo.insert({
     radarrMovieId: movie.id,
     title: movie.title,
-    actionType: 'downgrade',
+    actionType,
     details: {
       fromTier: movie.qualityProfileId,
       toTier: targetLib.tier,

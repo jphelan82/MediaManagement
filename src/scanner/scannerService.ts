@@ -145,13 +145,7 @@ export class ScannerService {
         // Auto-upgrade if no file exists yet (nothing downloaded, no waste)
         if (!movie.hasFile) {
           logger.info(`Auto-upgrading "${movie.title}" (no file yet): ${currentLib.name} → ${targetLib.name}`);
-          await executeDowngrade(this.radarr, movie, targetLib, this.logRepo);
-          this.logRepo.insert({
-            radarrMovieId: movie.id,
-            title: movie.title,
-            actionType: 'auto_upgrade',
-            details: { fromLibrary: currentLib.name, toLibrary: targetLib.name },
-          });
+          await executeDowngrade(this.radarr, movie, targetLib, this.logRepo, 'auto_upgrade');
           this.progress.downgrades++;
           return;
         }
