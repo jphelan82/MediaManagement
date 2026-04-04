@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s https://radarr.video/docs/api/)",
+      "Bash(curl -s https://wiki.servarr.com/en/radarr/api)",
+      "Bash(curl -s https://raw.githubusercontent.com/Radarr/Radarr/develop/src/Radarr.Api.V3/openapi.json)"
+    ]
+  }
+}
