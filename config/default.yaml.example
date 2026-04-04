@@ -19,7 +19,7 @@ libraries:
     qualityProfileId: 4    # HD-1080p — 1080p sources
 
 scanner:
-  scheduleCron: "0 */2 * * *"
+  scheduleCron: "0 */12 * * *"
   rateLimit:
     maxConcurrent: 2
     delayBetweenMs: 5000

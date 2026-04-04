@@ -139,9 +139,24 @@ export class ScannerService {
         this.progress.downgrades++;
       }
     } else if (bestTier < currentLib.tier) {
-      // Better quality is available → queue upgrade for approval
+      // Better quality is available
       const targetLib = getLibraryByTier(bestTier);
       if (targetLib) {
+        // Auto-upgrade if no file exists yet (nothing downloaded, no waste)
+        if (!movie.hasFile) {
+          logger.info(`Auto-upgrading "${movie.title}" (no file yet): ${currentLib.name} → ${targetLib.name}`);
+          await executeDowngrade(this.radarr, movie, targetLib, this.logRepo);
+          this.logRepo.insert({
+            radarrMovieId: movie.id,
+            title: movie.title,
+            actionType: 'auto_upgrade',
+            details: { fromLibrary: currentLib.name, toLibrary: targetLib.name },
+          });
+          this.progress.downgrades++;
+          return;
+        }
+
+        // File exists — queue for manual approval
         const queued = await queueUpgrade(
           movie, currentLib, targetLib,
           this.queueRepo, this.deniedRepo, this.logRepo,

@@ -49,11 +49,11 @@ async function main(): Promise<void> {
   await app.register(formbody);
 
   const templateRoot = path.resolve(__dirname, 'templates');
-  const njkEnv = nunjucks.configure(templateRoot, { autoescape: true });
 
   await app.register(view, {
-    engine: { nunjucks: njkEnv },
+    engine: { nunjucks },
     templates: templateRoot,
+    options: { autoescape: true },
   });
 
   // 7. Decorate with services
@@ -109,6 +109,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  logger.error('Fatal startup error', { error: err });
+  console.error('Fatal startup error:', err);
   process.exit(1);
 });
