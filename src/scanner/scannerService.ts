@@ -61,7 +61,7 @@ export class ScannerService {
 
       // Send notification if upgrades were queued
       if (this.progress.upgradesQueued > 0) {
-        const baseUrl = `http://localhost:${appConfig.server.port}`;
+        const baseUrl = appConfig.server.baseUrl;
         await this.pushover.send(
           'Media Management: Upgrades Available',
           `${this.progress.upgradesQueued} new upgrade candidate(s) found. Review and approve them.`,

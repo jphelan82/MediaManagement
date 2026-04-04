@@ -32,6 +32,7 @@ const AppConfigSchema = z.object({
   server: z.object({
     host: z.string(),
     port: z.number(),
+    baseUrl: z.string(),
   }),
 });
 

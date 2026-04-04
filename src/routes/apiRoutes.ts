@@ -29,10 +29,10 @@ export async function apiRoutes(app: FastifyInstance): Promise<void> {
       }
     } catch (err) {
       logger.error(`Failed to execute upgrade for "${item.title}"`, { error: err });
-      // The approval is recorded even if execution fails — can retry
     }
 
-    return item;
+    // Return empty string so HTMX removes the row
+    return reply.type('text/html').send('');
   });
 
   app.post('/queue/:id/deny', async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
@@ -52,7 +52,7 @@ export async function apiRoutes(app: FastifyInstance): Promise<void> {
       details: { targetTier: item.target_tier },
     });
 
-    return item;
+    return reply.type('text/html').send('');
   });
 
   app.post('/queue/denied/:id/approve', async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
@@ -82,7 +82,7 @@ export async function apiRoutes(app: FastifyInstance): Promise<void> {
       logger.error(`Failed to execute re-approved upgrade for "${item.title}"`, { error: err });
     }
 
-    return { ...item, status: 'approved' };
+    return reply.type('text/html').send('');
   });
 
   // Scan endpoints
