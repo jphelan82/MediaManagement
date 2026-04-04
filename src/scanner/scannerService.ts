@@ -101,8 +101,9 @@ export class ScannerService {
       return;
     }
 
-    // Skip gate: if file quality already matches the tier, no indexer search needed
-    if (movie.hasFile && movie.movieFile) {
+    // Skip gate: only skip if file matches tier AND movie is already in the highest tier.
+    // Lower tiers always need checking — a better quality may have become available.
+    if (movie.hasFile && movie.movieFile && currentLib.tier === 1) {
       const qualityName = movie.movieFile.quality?.quality?.name ?? '';
       if (fileMatchesTier(qualityName, currentLib.tier)) {
         this.progress.skipped++;

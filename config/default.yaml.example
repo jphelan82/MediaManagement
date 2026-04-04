@@ -22,8 +22,8 @@ scanner:
   scheduleCron: "0 */12 * * *"
   rateLimit:
     maxConcurrent: 2
-    delayBetweenMs: 5000
-    maxPerHour: 100
+    delayBetweenMs: 2000
+    maxPerHour: 500
 
 pushover:
   enabled: false
