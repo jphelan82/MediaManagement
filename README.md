@@ -6,6 +6,12 @@ A service that monitors Radarr movie libraries and ensures movies are placed in 
 - **Movies UHD** — 4K web-rips, WEB-DL, encodes
 - **HD** — 1080p content
 
+## Screenshots
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+![Upgrade Approval Queue](docs/screenshots/queue.png)
+
 ## What it does
 
 Movies sometimes end up in the wrong library — either because the target quality doesn't exist yet (e.g., added to UHD BR but no remux is available) or because a better quality becomes available over time (e.g., a 4K remux releases months after the web-rip).
