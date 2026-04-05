@@ -1,5 +1,7 @@
 # Media Management
 
+> **Who is this for?** If you use Radarr and Plex and split different quality media into separate libraries (e.g., a 4K remux library and an HD library), this service keeps movies in the right one. If you keep all qualities in a single library, Radarr handles upgrades natively and you don't need this.
+
 A service that monitors Radarr and automatically manages movies across multiple Plex libraries based on quality tiers. Define your libraries and quality tiers in config — the service ensures every movie lives in the right one.
 
 For example, a setup with three tiers:
