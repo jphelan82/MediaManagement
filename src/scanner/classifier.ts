@@ -22,25 +22,21 @@ export function classifyReleases(releases: RadarrRelease[]): Tier | null {
   return bestTier;
 }
 
-function classifySingleRelease(qualityName: string, title: string): Tier | null {
+function classifySingleRelease(qualityName: string, _title: string): Tier | null {
   const qLower = qualityName.toLowerCase();
-  const tLower = title.toLowerCase();
 
-  // Tier 1: 4K Remux
-  if (
-    (qLower.includes('remux') && qLower.includes('2160p')) ||
-    (tLower.includes('remux') && tLower.includes('2160p'))
-  ) {
+  // Tier 1: 4K Remux — only trust Radarr's parsed quality name, not the release title
+  if (qLower.includes('remux') && qLower.includes('2160p')) {
     return 1;
   }
 
   // Tier 2: 4K non-remux (WEB-DL, WEBRip, Blu-Ray encode, etc.)
-  if (qLower.includes('2160p') || tLower.includes('2160p')) {
+  if (qLower.includes('2160p')) {
     return 2;
   }
 
   // Tier 3: 1080p
-  if (qLower.includes('1080p') || tLower.includes('1080p')) {
+  if (qLower.includes('1080p')) {
     return 3;
   }
 
