@@ -184,16 +184,20 @@ export class ScannerService {
     const now = Date.now();
     const BUFFER_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-    // Prefer physical release (when Blu-rays/remuxes become available),
-    // fall back to digital release, then theatrical as last resort
-    const releaseDate = movie.physicalRelease ?? movie.digitalRelease ?? movie.inCinemas;
+    // Use the earliest available release date so the movie becomes eligible
+    // for evaluation as soon as any version could exist on indexers.
+    // Digital releases often precede physical, and we don't want to delay
+    // eligibility waiting for a later physical release date.
+    const dates = [movie.digitalRelease, movie.physicalRelease, movie.inCinemas]
+      .filter((d): d is string => !!d)
+      .map(d => new Date(d).getTime());
 
-    if (!releaseDate) {
+    if (dates.length === 0) {
       return true;
     }
 
-    const releaseTime = new Date(releaseDate).getTime();
-    return now > releaseTime + BUFFER_MS;
+    const earliestRelease = Math.min(...dates);
+    return now > earliestRelease + BUFFER_MS;
   }
 
   private freshProgress(): ScanProgress {
