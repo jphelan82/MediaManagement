@@ -1,10 +1,12 @@
 # Media Management
 
-A service that monitors Radarr movie libraries and ensures movies are placed in the correct quality tier across three Plex libraries:
+A service that monitors Radarr and automatically manages movies across multiple Plex libraries based on quality tiers. Define your libraries and quality tiers in config — the service ensures every movie lives in the right one.
 
-- **Movies UHD BR** — 4K Blu-Ray remuxes (highest quality)
-- **Movies UHD** — 4K web-rips, WEB-DL, encodes
-- **HD** — 1080p content
+For example, a setup with three tiers:
+
+- **Movies UHD BR** (Tier 1) — 4K Blu-Ray remuxes (highest quality)
+- **Movies UHD** (Tier 2) — 4K web-rips, WEB-DL, encodes
+- **HD** (Tier 3) — 1080p content
 
 ## Screenshots
 
