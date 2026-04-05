@@ -80,18 +80,25 @@ docker compose restart
 
 ### Update to latest version
 
-Pull the latest code and rebuild:
+SSH into the NAS and run:
 
 ```bash
-git pull
-docker compose up -d --build
+# Pull latest code (Synology doesn't have git installed, so use the alpine/git Docker image)
+sudo docker run --rm -v /volume1/docker/MediaManagement:/git alpine/git pull
+
+# Rebuild and restart (use --no-cache to ensure changes take effect)
+cd /volume1/docker/MediaManagement
+sudo docker compose build --no-cache
+sudo docker compose up -d
 ```
 
-If the build seems instant and changes aren't taking effect, Docker is using cached layers. Force a clean rebuild:
+If you have git installed natively, you can simplify the pull step:
 
 ```bash
-docker compose build --no-cache
-docker compose up -d
+cd /volume1/docker/MediaManagement
+git pull
+sudo docker compose build --no-cache
+sudo docker compose up -d
 ```
 
 ### Stop the service
