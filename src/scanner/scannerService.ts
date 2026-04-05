@@ -179,9 +179,11 @@ export class ScannerService {
     const releaseDate = movie.physicalRelease ?? movie.digitalRelease ?? movie.inCinemas;
 
     if (!releaseDate) {
-      // No release date info — skip if movie has no file (truly unreleased)
-      // Process if it already has a file (must have been released somehow)
-      return movie.hasFile;
+      // No release date info — fall back to movie year.
+      // If the movie is from more than a year ago, it's certainly released.
+      if (movie.hasFile) return true;
+      const currentYear = new Date().getFullYear();
+      return movie.year < currentYear;
     }
 
     const releaseTime = new Date(releaseDate).getTime();
