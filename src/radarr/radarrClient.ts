@@ -40,6 +40,11 @@ export class RadarrClient {
     return data;
   }
 
+  async deleteMovieFile(movieFileId: number): Promise<void> {
+    logger.info(`Deleting movie file ${movieFileId}`);
+    await this.http.delete(`/moviefile/${movieFileId}`);
+  }
+
   async searchMovie(movieIds: number[]): Promise<RadarrCommand> {
     const { data } = await this.http.post<RadarrCommand>('/command', {
       name: 'MoviesSearch',

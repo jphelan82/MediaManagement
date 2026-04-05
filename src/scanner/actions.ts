@@ -42,7 +42,13 @@ export async function executeDowngrade(
   };
 
   await radarr.updateMovie(updatedMovie, true);
-  await radarr.searchMovie([movie.id]);
+
+  // Wait for Radarr to finish processing the movie update before triggering a search
+  await new Promise(resolve => setTimeout(resolve, 5000));
+
+  logger.info(`Triggering Radarr search for "${movie.title}" (id: ${movie.id})`);
+  const cmd = await radarr.searchMovie([movie.id]);
+  logger.info(`Radarr search command response for "${movie.title}"`, { commandId: cmd.id, status: cmd.status });
 
   logRepo.insert({
     radarrMovieId: movie.id,
@@ -111,6 +117,14 @@ export async function executeApproval(
 
   logger.info(`Executing approved upgrade for "${movie.title}" to ${targetLib.name}`);
 
+  // Delete existing movie file so Radarr will search fresh for the target quality.
+  // Without this, Radarr won't replace a file that doesn't match the new profile
+  // (e.g., WEBDL-2160p in a remux-only profile).
+  if (movie.hasFile && movie.movieFile) {
+    logger.info(`Deleting existing file for "${movie.title}" (fileId: ${movie.movieFile.id}, quality: ${movie.movieFile.quality?.quality?.name})`);
+    await radarr.deleteMovieFile(movie.movieFile.id);
+  }
+
   const updatedMovie: RadarrMovie = {
     ...movie,
     qualityProfileId: targetLib.qualityProfileId,
@@ -119,7 +133,13 @@ export async function executeApproval(
   };
 
   await radarr.updateMovie(updatedMovie, true);
-  await radarr.searchMovie([movie.id]);
+
+  // Wait for Radarr to finish processing the movie update before triggering a search
+  await new Promise(resolve => setTimeout(resolve, 5000));
+
+  logger.info(`Triggering Radarr search for "${movie.title}" (id: ${movie.id})`);
+  const cmd = await radarr.searchMovie([movie.id]);
+  logger.info(`Radarr search command response for "${movie.title}"`, { commandId: cmd.id, status: cmd.status });
 
   logRepo.insert({
     radarrMovieId: movie.id,
