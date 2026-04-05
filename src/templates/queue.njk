@@ -10,11 +10,9 @@
 
 {% if items.length > 0 %}
 <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
-  <button class="outline secondary" style="width: auto;"
-          hx-post="/api/queue/clear"
-          hx-confirm="Clear all {{ items.length }} pending items? The next scan will rebuild the queue with the latest data.">
-    Clear Queue
-  </button>
+  <form action="/api/queue/clear" method="POST" onsubmit="return confirm('Clear all {{ items.length }} pending items? The next scan will rebuild the queue with the latest data.')">
+    <button type="submit" class="outline secondary" style="width: auto;">Clear Queue</button>
+  </form>
 </div>
 <table>
   <thead>
