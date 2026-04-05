@@ -170,16 +170,25 @@ export class ScannerService {
     // else: bestTier === currentLib.tier → no action needed
   }
 
+  /**
+   * Checks whether a movie has been released long enough for quality media
+   * to be available on indexers.
+   *
+   * - If a release date exists (physical > digital > theatrical), we require
+   *   24 hours past that date to allow media to propagate to indexers.
+   * - If no release date exists, we always process the movie. Many older films
+   *   lack release date metadata in TMDB/Radarr, and skipping them would mean
+   *   they never get evaluated.
+   */
   private isReleased(movie: RadarrMovie): boolean {
     const now = Date.now();
     const BUFFER_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-    // Check physical release first (most relevant for quality media)
-    // Then digital release, then theatrical
+    // Prefer physical release (when Blu-rays/remuxes become available),
+    // fall back to digital release, then theatrical as last resort
     const releaseDate = movie.physicalRelease ?? movie.digitalRelease ?? movie.inCinemas;
 
     if (!releaseDate) {
-      // No release date info — assume released, process it
       return true;
     }
 
