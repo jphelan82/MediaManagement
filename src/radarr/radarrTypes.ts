@@ -33,6 +33,10 @@ export const RadarrMovieSchema = z.object({
   qualityProfileId: z.number(),
   rootFolderPath: z.string().nullish(),
   monitored: z.boolean(),
+  status: z.string().optional(),
+  digitalRelease: z.string().nullish(),
+  physicalRelease: z.string().nullish(),
+  inCinemas: z.string().nullish(),
 });
 
 export const RadarrReleaseSchema = z.object({

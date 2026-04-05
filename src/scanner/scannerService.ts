@@ -101,6 +101,14 @@ export class ScannerService {
       return;
     }
 
+    // Skip unreleased movies — no point searching indexers if media isn't available yet.
+    // Use physical release + 24h buffer (for remuxes/blu-rays), fall back to digital release.
+    if (!this.isReleased(movie)) {
+      logger.debug(`Skipping "${movie.title}" — not yet released`);
+      this.progress.skipped++;
+      return;
+    }
+
     // Skip gate: only skip if file matches tier AND movie is already in the highest tier.
     // Lower tiers always need checking — a better quality may have become available.
     if (movie.hasFile && movie.movieFile && currentLib.tier === 1) {
@@ -160,6 +168,24 @@ export class ScannerService {
       }
     }
     // else: bestTier === currentLib.tier → no action needed
+  }
+
+  private isReleased(movie: RadarrMovie): boolean {
+    const now = Date.now();
+    const BUFFER_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+    // Check physical release first (most relevant for quality media)
+    // Then digital release, then theatrical
+    const releaseDate = movie.physicalRelease ?? movie.digitalRelease ?? movie.inCinemas;
+
+    if (!releaseDate) {
+      // No release date info — skip if movie has no file (truly unreleased)
+      // Process if it already has a file (must have been released somehow)
+      return movie.hasFile;
+    }
+
+    const releaseTime = new Date(releaseDate).getTime();
+    return now > releaseTime + BUFFER_MS;
   }
 
   private freshProgress(): ScanProgress {
