@@ -85,6 +85,22 @@ export async function apiRoutes(app: FastifyInstance): Promise<void> {
     return reply.type('text/html').send('');
   });
 
+  // Clear all pending items from the queue
+  app.post('/queue/clear', async (request, reply) => {
+    const cleared = app.queueRepo.clearPending();
+    logger.info(`Cleared ${cleared} pending queue items`);
+
+    app.logRepo.insert({
+      radarrMovieId: 0,
+      title: 'System',
+      actionType: 'queue_cleared',
+      details: { itemsCleared: cleared },
+    });
+
+    // Redirect back to queue page
+    return reply.redirect('/queue');
+  });
+
   // Scan endpoints
   app.post('/scan', async (request, reply) => {
     if (app.scanner.isRunning()) {

@@ -69,4 +69,11 @@ export class QueueRepository {
     ).get() as { count: number };
     return row.count;
   }
+
+  clearPending(): number {
+    const result = getDb().prepare(
+      `DELETE FROM upgrade_queue WHERE status = 'pending'`
+    ).run();
+    return result.changes;
+  }
 }
