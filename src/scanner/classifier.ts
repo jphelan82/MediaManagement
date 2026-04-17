@@ -5,12 +5,18 @@ const IGNORED_QUALITIES = new Set([
   'CAM', 'TELECINE', 'TELESYNC', 'WORKPRINT', 'Unknown',
 ]);
 
+/** Matches Dolby Vision indicators in release titles */
+const DV_PATTERN = /\b(DV|DoVi|Dolby[\s.]?Vision)\b/i;
+
 export function classifyReleases(releases: RadarrRelease[]): Tier | null {
   let bestTier: Tier | null = null;
 
   for (const release of releases) {
     const qualityName = release.quality?.quality?.name ?? '';
     if (IGNORED_QUALITIES.has(qualityName)) continue;
+
+    // Skip Dolby Vision releases — they are unwanted regardless of tier
+    if (DV_PATTERN.test(release.title)) continue;
 
     const tier = classifySingleRelease(qualityName, release.title);
     if (tier !== null && (bestTier === null || tier < bestTier)) {
