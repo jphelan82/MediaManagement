@@ -5,8 +5,10 @@ const IGNORED_QUALITIES = new Set([
   'CAM', 'TELECINE', 'TELESYNC', 'WORKPRINT', 'Unknown',
 ]);
 
-/** Matches Dolby Vision indicators in release titles */
+/** Matches DV Profile 5 (single-layer, no HDR10 fallback) in release titles.
+ *  Dual-layer releases (DV + HDR/HDR10/HDR10+) are safe and allowed through. */
 const DV_PATTERN = /\b(DV|DoVi|Dolby[\s.]?Vision)\b/i;
+const HDR_PATTERN = /\bHDR(10)?\b/i;
 
 export function classifyReleases(releases: RadarrRelease[]): Tier | null {
   let bestTier: Tier | null = null;
@@ -15,8 +17,9 @@ export function classifyReleases(releases: RadarrRelease[]): Tier | null {
     const qualityName = release.quality?.quality?.name ?? '';
     if (IGNORED_QUALITIES.has(qualityName)) continue;
 
-    // Skip Dolby Vision releases — they are unwanted regardless of tier
-    if (DV_PATTERN.test(release.title)) continue;
+    // Skip DV-only releases (no HDR10 fallback) — these cause pink/green hue
+    // on non-DV displays. Dual-layer (DV + HDR10) releases are allowed through.
+    if (DV_PATTERN.test(release.title) && !HDR_PATTERN.test(release.title)) continue;
 
     const tier = classifySingleRelease(qualityName, release.title);
     if (tier !== null && (bestTier === null || tier < bestTier)) {
