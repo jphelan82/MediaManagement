@@ -14,6 +14,11 @@ export function classifyReleases(releases: RadarrRelease[]): Tier | null {
   let bestTier: Tier | null = null;
 
   for (const release of releases) {
+    // Radarr returns matches for other movies (fuzzy indexer results) and
+    // quality-mismatch rejections in the same list. Trusting those would
+    // make us see a tier 1 remux that doesn't actually exist for this movie.
+    if (release.rejected) continue;
+
     const qualityName = release.quality?.quality?.name ?? '';
     if (IGNORED_QUALITIES.has(qualityName)) continue;
 
