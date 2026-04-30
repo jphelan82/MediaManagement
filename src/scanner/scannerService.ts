@@ -126,9 +126,15 @@ export class ScannerService {
 
     // Classify best available tier
     const bestTier = classifyReleases(releases);
+
+    // Hold off on auto-downgrades for movies whose streaming release is in the
+    // future or happened in the last 24h — indexers need time to catch up,
+    // and downgrading prematurely causes churn (downgrade now, re-add later).
+    const inStreamingGrace = this.inStreamingGracePeriod(movie);
+
     if (bestTier === null) {
       // No usable releases found — if movie has no file, could try downgrading
-      if (!movie.hasFile && currentLib.tier < 3) {
+      if (!movie.hasFile && currentLib.tier < 3 && !inStreamingGrace) {
         // Movie has no file and is in a high tier — try next lower tier
         const lowerLib = getLibraryByTier(currentLib.tier + 1 as 1 | 2 | 3);
         if (lowerLib) {
@@ -136,11 +142,20 @@ export class ScannerService {
           this.progress.downgrades++;
         }
       }
+      if (inStreamingGrace) {
+        logger.debug(`Skipping auto-downgrade for "${movie.title}" — within streaming-release grace window`);
+        this.progress.skipped++;
+      }
       return;
     }
 
     // Compare current tier with best available
     if (bestTier > currentLib.tier) {
+      if (inStreamingGrace) {
+        logger.debug(`Skipping auto-downgrade for "${movie.title}" — within streaming-release grace window`);
+        this.progress.skipped++;
+        return;
+      }
       // Current library is HIGHER quality than what's available → downgrade
       const targetLib = getLibraryByTier(bestTier);
       if (targetLib) {
@@ -198,6 +213,19 @@ export class ScannerService {
 
     const earliestRelease = Math.min(...dates);
     return now > earliestRelease + BUFFER_MS;
+  }
+
+  /**
+   * Returns true if the movie's streaming release is in the future or
+   * happened within the last 24 hours. During this window indexers are
+   * still catching up, so we hold off on auto-downgrades to avoid churn.
+   */
+  private inStreamingGracePeriod(movie: RadarrMovie): boolean {
+    if (!movie.digitalRelease) return false;
+    const releaseMs = new Date(movie.digitalRelease).getTime();
+    if (Number.isNaN(releaseMs)) return false;
+    const GRACE_MS = 24 * 60 * 60 * 1000;
+    return Date.now() < releaseMs + GRACE_MS;
   }
 
   private freshProgress(): ScanProgress {
