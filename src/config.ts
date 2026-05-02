@@ -34,6 +34,10 @@ const AppConfigSchema = z.object({
     port: z.number(),
     baseUrl: z.string(),
   }),
+  links: z.object({
+    radarrUrl: z.string().optional(),
+    seerrUrl: z.string().optional(),
+  }).optional(),
 });
 
 export type AppConfig = z.infer<typeof AppConfigSchema>;

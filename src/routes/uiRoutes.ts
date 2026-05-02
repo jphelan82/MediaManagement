@@ -26,7 +26,11 @@ export async function uiRoutes(app: FastifyInstance): Promise<void> {
   // Approval queue page
   app.get('/queue', async (request, reply) => {
     const items = app.queueRepo.getPending();
-    return reply.view('queue.njk', { items, tierName });
+    return reply.view('queue.njk', {
+      items,
+      tierName,
+      links: appConfig.links ?? {},
+    });
   });
 
   // Denied movies page

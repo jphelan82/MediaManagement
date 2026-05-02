@@ -46,6 +46,26 @@
                 hx-confirm="Deny upgrade for {{ item.title }}?">
           Deny
         </button>
+        {% if links.radarrUrl %}
+        <a href="{{ links.radarrUrl }}/movie/{{ item.tmdb_id }}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="service-link"
+           title="Open in Radarr"
+           aria-label="Open {{ item.title }} in Radarr">
+          <img src="{{ links.radarrUrl }}/Content/Images/Icons/favicon-32x32.png" alt="" width="20" height="20">
+        </a>
+        {% endif %}
+        {% if links.seerrUrl %}
+        <a href="{{ links.seerrUrl }}/movie/{{ item.tmdb_id }}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="service-link"
+           title="Open in Seerr"
+           aria-label="Open {{ item.title }} in Seerr">
+          <img src="{{ links.seerrUrl }}/favicon-32x32.png" alt="" width="20" height="20">
+        </a>
+        {% endif %}
       </td>
     </tr>
     {% endfor %}

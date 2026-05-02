@@ -34,8 +34,11 @@
     .tier-1 { background: #7c3aed; color: white; }
     .tier-2 { background: #2563eb; color: white; }
     .tier-3 { background: #059669; color: white; }
-    .action-buttons { display: flex; gap: 0.5rem; }
+    .action-buttons { display: flex; gap: 0.5rem; align-items: center; }
     .action-buttons button { margin: 0; padding: 0.4em 0.8em; font-size: 0.85rem; }
+    .service-link { display: inline-flex; align-items: center; padding: 0.25rem; border-radius: 4px; opacity: 0.75; transition: opacity 150ms ease; }
+    .service-link:hover { opacity: 1; background: rgba(255,255,255,0.08); }
+    .service-link img { display: block; }
     .htmx-indicator { opacity: 0; transition: opacity 200ms ease-in; }
     .htmx-request .htmx-indicator { opacity: 1; }
     .htmx-request.htmx-indicator { opacity: 1; }

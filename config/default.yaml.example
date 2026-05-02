@@ -34,3 +34,10 @@ server:
   host: "0.0.0.0"
   port: 8765
   baseUrl: "http://your-host:8765"
+
+# Optional external service links — when set, the approval queue shows
+# per-row icons that open each movie in Radarr / Overseerr-Jellyseerr.
+# Leave commented out to hide the icons.
+# links:
+#   radarrUrl: "http://radarr.example.com:7878"
+#   seerrUrl: "http://seerr.example.com:5055"
