@@ -127,32 +127,33 @@ export class ScannerService {
     // Classify best available tier
     const bestTier = classifyReleases(releases);
 
-    // Hold off on auto-downgrades for movies whose streaming release is in the
-    // future or happened in the last 24h — indexers need time to catch up,
-    // and downgrading prematurely causes churn (downgrade now, re-add later).
-    const inStreamingGrace = this.inStreamingGracePeriod(movie);
+    // Movies with a 2026+ theatrical release are assumed to eventually get a
+    // UHD release. Don't auto-downgrade them to HD (tier 3) — sit in UHD with
+    // no file until something better shows up.
+    const blockHdDowngrade = this.isRecentTheatrical(movie);
 
     if (bestTier === null) {
       // No usable releases found — if movie has no file, could try downgrading
-      if (!movie.hasFile && currentLib.tier < 3 && !inStreamingGrace) {
-        // Movie has no file and is in a high tier — try next lower tier
-        const lowerLib = getLibraryByTier(currentLib.tier + 1 as 1 | 2 | 3);
+      if (!movie.hasFile && currentLib.tier < 3) {
+        const targetTier = (currentLib.tier + 1) as 1 | 2 | 3;
+        if (targetTier === 3 && blockHdDowngrade) {
+          logger.debug(`Skipping HD downgrade for "${movie.title}" — recent theatrical release`);
+          this.progress.skipped++;
+          return;
+        }
+        const lowerLib = getLibraryByTier(targetTier);
         if (lowerLib) {
           await executeDowngrade(this.radarr, movie, lowerLib, this.logRepo);
           this.progress.downgrades++;
         }
-      }
-      if (inStreamingGrace) {
-        logger.debug(`Skipping auto-downgrade for "${movie.title}" — within streaming-release grace window`);
-        this.progress.skipped++;
       }
       return;
     }
 
     // Compare current tier with best available
     if (bestTier > currentLib.tier) {
-      if (inStreamingGrace) {
-        logger.debug(`Skipping auto-downgrade for "${movie.title}" — within streaming-release grace window`);
+      if (bestTier === 3 && blockHdDowngrade) {
+        logger.debug(`Skipping HD downgrade for "${movie.title}" — recent theatrical release`);
         this.progress.skipped++;
         return;
       }
@@ -216,16 +217,14 @@ export class ScannerService {
   }
 
   /**
-   * Returns true if the movie's streaming release is in the future or
-   * happened within the last 24 hours. During this window indexers are
-   * still catching up, so we hold off on auto-downgrades to avoid churn.
+   * Returns true if the movie hit theaters in 2026 or later. Used to block
+   * auto-downgrades to HD: any modern theatrical release will eventually
+   * get a UHD release, so 1080p-only is just a gap to wait through.
    */
-  private inStreamingGracePeriod(movie: RadarrMovie): boolean {
-    if (!movie.digitalRelease) return false;
-    const releaseMs = new Date(movie.digitalRelease).getTime();
-    if (Number.isNaN(releaseMs)) return false;
-    const GRACE_MS = 24 * 60 * 60 * 1000;
-    return Date.now() < releaseMs + GRACE_MS;
+  private isRecentTheatrical(movie: RadarrMovie): boolean {
+    if (!movie.inCinemas) return false;
+    const year = new Date(movie.inCinemas).getUTCFullYear();
+    return Number.isFinite(year) && year >= 2026;
   }
 
   private freshProgress(): ScanProgress {

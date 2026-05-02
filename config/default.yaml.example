@@ -1,5 +1,5 @@
 radarr:
-  url: "http://192.168.50.100:7878"
+  url: "http://192.168.50.102:7878"
   apiKey: "YOUR_RADARR_API_KEY"
 
 # Library tiers: tier 1 = highest quality, tier 3 = lowest
